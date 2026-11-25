@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>International Trip Nomination</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800\&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -20,25 +21,25 @@
 </div></nav>
 
 <main><div class="wrap">
-  <div class="who" id="who">
+  <div class="card who">
     <span id="who-text">Sign in with your work account to run or vote.</span>
     <div id="g-btn"></div>
   </div>
 
-  <section id="rules" class="on">
+  <section id="rules" class="on"><div class="card">
     <h2>Nomination rules</h2>
     <ol>
-      <li>Only colleagues in <strong>support roles</strong> can run. Sales consultants and service colleagues are not eligible.</li>
-      <li>Every submission uses your <strong>@rentokil-initial.com</strong> Google account. The email comes from your sign-in and cannot be edited.</li>
-      <li>You can only vote for someone on the nominee list.</li>
-      <li>Each email can vote <strong>once</strong>. Votes cannot be changed or withdrawn.</li>
-      <li>Colleagues who are running <strong>cannot vote</strong>, and you cannot vote for yourself.</li>
-      <li>If you have already voted, you can no longer run.</li>
-      <li>The nominee with the most votes is selected.</li>
+      <li><span>Only colleagues in <strong>support roles</strong> can run. Sales consultants and service colleagues are not eligible.</span></li>
+      <li><span>Every submission uses your <strong>@rentokil-initial.com</strong> Google account. The email comes from your sign-in and cannot be edited.</span></li>
+      <li><span>You can only vote for someone on the nominee list.</span></li>
+      <li><span>Each email can vote <strong>once</strong>. Votes cannot be changed or withdrawn.</span></li>
+      <li><span>Colleagues who are running <strong>cannot vote</strong>, and you cannot vote for yourself.</span></li>
+      <li><span>If you have already voted, you can no longer run.</span></li>
+      <li><span>The nominee with the most votes is selected.</span></li>
     </ol>
-  </section>
+  </div></section>
 
-  <section id="run">
+  <section id="run"><div class="card">
     <h2>Run for nomination</h2>
     <label for="r-dept">Department</label>
     <input id="r-dept" maxlength="120">
@@ -48,21 +49,23 @@
     <input id="r-email" readonly>
     <button class="go" id="run-go" disabled>Enter nomination</button>
     <div class="msg" id="run-msg" role="status"></div>
-  </section>
+  </div></section>
 
-  <section id="vote">
+  <section id="vote"><div class="card">
     <h2>Vote for a nominee</h2>
     <label for="v-name">Your full name</label>
     <input id="v-name" autocomplete="name" maxlength="120">
     <label for="v-email">Your work email</label>
     <input id="v-email" readonly>
-    <label for="v-target">Work email of your nominee</label>
-    <input id="v-target" type="email" list="nominees" placeholder="name@rentokil-initial.com" autocomplete="off">
-    <datalist id="nominees"></datalist>
+    <label for="v-target">Nominee work email</label>
+    <div class="pick">
+      <input id="v-target" type="email" placeholder="Type a name or email" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sugg">
+      <div class="sugg" id="sugg" role="listbox" hidden></div>
+    </div>
     <div class="hint" id="count"></div>
     <button class="go" id="vote-go" disabled>Cast vote</button>
     <div class="msg" id="vote-msg" role="status"></div>
-  </section>
+  </div></section>
 </div></main>
 
 <footer><div class="wrap"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms of use</a></div></footer>
