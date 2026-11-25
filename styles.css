@@ -23,3 +23,9 @@ input[readonly]{background:#eef2ef;color:var(--muted)}
 .msg.ok{display:block;background:#e6f3ec;color:var(--brand);border:1px solid #a9d3bd}
 h2{margin-top:0}ol li{margin-bottom:10px}
 .hint{font:13px system-ui,sans-serif;color:var(--muted);margin-top:4px}
+footer{border-top:1px solid var(--line);padding:20px;font:14px system-ui,sans-serif;color:var(--muted)}
+footer .wrap{display:flex;gap:18px;flex-wrap:wrap}
+footer a,.back{color:var(--brand)}
+.doc h2{margin-top:32px;font-size:1.2rem}
+.doc p,.doc li{max-width:68ch}
+.updated{font:13px system-ui,sans-serif;color:var(--muted)}
