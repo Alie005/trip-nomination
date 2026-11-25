@@ -79,3 +79,5 @@ footer .wrap{display:flex;gap:20px;flex-wrap:wrap}
 .doc h2{background:var(--tint);color:var(--red-d);display:inline-block;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px;border-radius:8px;margin:24px 0 10px}
 .doc ul{padding-left:20px}.doc li{margin-bottom:6px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+[hidden]{display:none!important}
+.reason{padding:14px 16px;background:var(--tint);border:2px dashed var(--red);border-radius:10px;font-weight:600;color:var(--red-d)}

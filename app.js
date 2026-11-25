@@ -11,11 +11,32 @@
 
   function show(id, ok, text) { var m = $(id); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = text; }
 
-  function api(action, payload) {
-    var body = Object.assign({ action: action, idToken: token }, payload || {});
-    return fetch(C.API_URL, { method: 'POST', body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  // Either shows the reason card (form hidden) or the form (reason hidden).
+  function gate(prefix, reason) {
+    $(prefix + '-reason').textContent = reason || '';
+    $(prefix + '-reason').hidden = !reason;
+    $(prefix + '-form').hidden = !!reason;
   }
 
+  function signedOut(msg) {
+    token = null;
+    $('signin').hidden = false;
+    $('who-text').textContent = msg || 'Sign in with your work account to run or vote.';
+    gate('run', 'Sign in with your work account to enter the nomination.');
+    gate('vote', 'Sign in with your work account to vote.');
+  }
+
+  function api(action, payload) {
+    var body = Object.assign({ action: action, idToken: token }, payload || {});
+    return fetch(C.API_URL, { method: 'POST', body: JSON.stringify(body) })
+      .then(function (r) { return r.text(); })
+      .then(function (t) {
+        try { return JSON.parse(t); }
+        catch (e) { throw new Error('unexpected reply from the server (is the Apps Script deployment access set to Anyone?)'); }
+      });
+  }
+
+  signedOut();
   window.addEventListener('load', function init() {
     if (!window.google || !google.accounts) return setTimeout(init, 200);
     google.accounts.id.initialize({ client_id: C.CLIENT_ID, hd: C.DOMAIN.slice(1), callback: function (r) { token = r.credential; load(); } });
@@ -23,49 +44,55 @@
   });
 
   function load() {
+    $('who-text').textContent = 'Signing you in…';
     api('getContext').then(function (c) {
-      if (!c.ok) { token = null; return $('who-text').textContent = c.message; }
+      if (!c.ok) return signedOut(c.message);
       apply(c.data);
-    }).catch(function () { $('who-text').textContent = 'Could not reach the server. Try again.'; });
+    }).catch(function (e) {
+      console.error(e);
+      signedOut('Signed in, but the server could not be reached: ' + e.message + '. Check API_URL in config.js.');
+    });
   }
 
   function apply(c) {
-    $('g-btn').style.display = 'none';
+    $('signin').hidden = true;
     $('r-email').value = c.email; $('v-email').value = c.email;
+    if (c.name) { if (!$('r-name').value) $('r-name').value = c.name; if (!$('v-name').value) $('v-name').value = c.name; }
     nominees = c.nominees;
     $('count').textContent = nominees.length + ' nominee' + (nominees.length === 1 ? '' : 's') + ' so far. Tap the box to see them.';
 
-    var runOk = true, voteOk = true, note = 'Signed in as ' + c.email;
-    if (c.isNominee) { runOk = voteOk = false; note += '. You are a nominee, so voting is closed to you.'; }
-    else if (c.hasVoted) { runOk = voteOk = false; note += '. You have already voted.'; }
-    else if (c.isExcluded) { runOk = false; note += '. Your role is not eligible to run, but you can vote.'; }
-    $('who-text').textContent = note;
-    $('run-go').disabled = !runOk; $('vote-go').disabled = !voteOk;
+    var run = '', vote = '';
+    if (c.isNominee) {
+      run = 'You are in the running. Good luck!';
+      vote = 'Nominees cannot vote. You are running, so your vote is not allowed.';
+    } else if (c.hasVoted) {
+      run = 'You have already voted, so you cannot run.';
+      vote = 'Your vote is recorded. Each email can vote once and votes cannot be changed.';
+    } else if (c.isExcluded) {
+      run = 'Your role is not eligible to run. Only support roles can be nominated; sales consultants and service colleagues cannot.';
+    }
+    gate('run', run); gate('vote', vote);
   }
 
-  /* ---- Nominee suggestions (built with textContent so names can never inject HTML) ---- */
+  /* ---- Nominee suggestions (textContent only, so names can never inject HTML) ---- */
   var box = $('sugg'), target = $('v-target');
-
   function note(text) { var p = document.createElement('div'); p.className = 'sugg-note'; p.textContent = text; box.appendChild(p); }
 
   function render() {
     var q = target.value.trim().toLowerCase();
     box.innerHTML = '';
-    if (!token) note('Sign in first to see the nominees.');
-    else {
-      var m = nominees.filter(function (n) { return !q || (n.name + ' ' + n.email + ' ' + n.dept).toLowerCase().indexOf(q) > -1; });
-      if (!m.length) note(nominees.length ? 'No nominee matches that.' : 'No nominees yet.');
-      m.forEach(function (n) {
-        var b = document.createElement('button');
-        b.type = 'button'; b.className = 'sugg-item'; b.setAttribute('role', 'option');
-        [['b', n.name], ['span', n.dept], ['span', n.email]].forEach(function (p) {
-          var e = document.createElement(p[0]); e.textContent = p[1]; b.appendChild(e);
-        });
-        b.onmousedown = function (ev) { ev.preventDefault(); pick(n); };
-        b.onclick = function () { pick(n); };
-        box.appendChild(b);
+    var m = nominees.filter(function (n) { return !q || (n.name + ' ' + n.email + ' ' + n.dept).toLowerCase().indexOf(q) > -1; });
+    if (!m.length) note(nominees.length ? 'No nominee matches that.' : 'No nominees yet.');
+    m.forEach(function (n) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'sugg-item'; b.setAttribute('role', 'option');
+      [['b', n.name], ['span', n.dept], ['span', n.email]].forEach(function (p) {
+        var e = document.createElement(p[0]); e.textContent = p[1]; b.appendChild(e);
       });
-    }
+      b.onmousedown = function (ev) { ev.preventDefault(); pick(n); };
+      b.onclick = function () { pick(n); };
+      box.appendChild(b);
+    });
     box.hidden = false; target.setAttribute('aria-expanded', 'true');
   }
   function hide() { box.hidden = true; target.setAttribute('aria-expanded', 'false'); }
@@ -88,8 +115,10 @@
 
   function send(btn, msgId, action, payload) {
     btn.disabled = true; show(msgId, true, 'Sending…');
-    api(action, payload).then(function (r) { show(msgId, r.ok, r.message); load(); })
-      .catch(function () { show(msgId, false, 'Could not reach the server. Try again.'); btn.disabled = false; });
+    api(action, payload).then(function (r) {
+      show(msgId, r.ok, r.message); btn.disabled = false;
+      if (r.ok) load();
+    }).catch(function (e) { show(msgId, false, 'Could not reach the server: ' + e.message); btn.disabled = false; });
   }
 
   $('run-go').onclick = function () {

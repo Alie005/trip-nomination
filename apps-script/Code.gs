@@ -11,9 +11,10 @@ function doGet() { return json_({ ok: true, message: 'Trip nomination API is run
 function doPost(e) {
   try {
     const req = JSON.parse(e.postData.contents);
-    const email = verify_(req.idToken);
-    if (!email) return json_({ ok: false, message: 'Sign in with your @' + DOMAIN + ' account.' });
-    if (req.action === 'getContext') return json_({ ok: true, data: state_(email) });
+    const user = verify_(req.idToken);
+    if (!user) return json_({ ok: false, message: 'Sign in with your @' + DOMAIN + ' account.' });
+    const email = user.email;
+    if (req.action === 'getContext') return json_({ ok: true, data: state_(email, user.name) });
     if (req.action === 'submitNomination') return json_(submitNomination_(email, req));
     if (req.action === 'submitVote') return json_(submitVote_(email, req));
     return json_({ ok: false, message: 'Unknown action.' });
@@ -46,7 +47,7 @@ function verify_(idToken) {
   const email = norm_(p.email);
   if (p.aud !== CLIENT_ID || String(p.email_verified) !== 'true' || p.hd !== DOMAIN) return null;
   if (!/^[a-z0-9._%+'-]+@rentokil-initial\.com$/.test(email)) return null;
-  return email;
+  return { email: email, name: clean_(p.name || '') };
 }
 
 /* ---------- helpers ---------- */
@@ -56,10 +57,11 @@ const clean_ = s => String(s || '').trim().replace(/^[=+\-@]+/, '').slice(0, 120
 const fail_ = m => ({ ok: false, message: m });
 const rows_ = n => SpreadsheetApp.getActive().getSheetByName(n).getDataRange().getValues().slice(1).filter(r => r.join('') !== '');
 
-function state_(email) {
+function state_(email, name) {
   const nominees = rows_('Nominees').map(r => ({ dept: r[1], name: r[2], email: norm_(r[3]) }));
   return {
     email: email,
+    name: name || '',
     nominees: nominees,
     isNominee: nominees.some(n => n.email === email),
     hasVoted: rows_('Voters').some(r => norm_(r[2]) === email),
