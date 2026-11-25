@@ -24,6 +24,8 @@ nav button{font:inherit;font-weight:800;text-transform:uppercase;letter-spacing:
   padding:8px 18px;border:2px solid var(--ink);border-radius:999px;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .1s,box-shadow .1s}
 nav button:hover{transform:translate(-1px,-1px)}
 nav button[aria-selected=true]{background:var(--gold);transform:translate(3px,3px);box-shadow:none}
+nav button:disabled{background:#e6d3d5;color:#8d7074;border-style:dashed;box-shadow:none;cursor:not-allowed}
+.vote-status{color:var(--muted);font-weight:800;white-space:nowrap;align-self:center}
 
 /* Cards */
 main{padding:6px 0 48px}
