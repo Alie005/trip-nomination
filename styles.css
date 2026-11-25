@@ -1,0 +1,25 @@
+:root{--ink:#16302b;--muted:#5b6f6a;--paper:#f7f9f6;--card:#fff;--line:#d5ded9;--brand:#0b6b4f;--brand-d:#084c38;--err:#a3281f}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.55 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+header{background:var(--brand);color:#fff;padding:36px 20px 28px}
+.wrap{max-width:720px;margin:0 auto}
+h1{margin:0 0 6px;font-size:clamp(1.7rem,5vw,2.4rem);line-height:1.15}
+header p{margin:0;opacity:.9}
+nav{border-bottom:1px solid var(--line);background:var(--card)}
+nav .wrap{display:flex;gap:4px}
+nav button{font:600 15px system-ui,sans-serif;padding:14px 18px;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+nav button[aria-selected=true]{color:var(--brand);border-color:var(--brand)}
+button:focus-visible,input:focus-visible,.go:focus-visible{outline:3px solid #f2b705;outline-offset:2px}
+main{padding:28px 20px 60px}
+section{display:none}section.on{display:block}
+.who{font:14px system-ui,sans-serif;background:#e9f1ed;border:1px solid var(--line);padding:10px 14px;border-radius:6px;margin-bottom:22px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+label{display:block;font:600 14px system-ui,sans-serif;margin:16px 0 6px}
+input{width:100%;padding:11px 12px;font:16px system-ui,sans-serif;border:1px solid #9db0a9;border-radius:6px;background:#fff}
+input[readonly]{background:#eef2ef;color:var(--muted)}
+.go{margin-top:22px;font:600 16px system-ui,sans-serif;padding:12px 22px;border:0;border-radius:6px;background:var(--brand);color:#fff;cursor:pointer}
+.go:hover{background:var(--brand-d)}.go:disabled{background:#9db0a9;cursor:not-allowed}
+.msg{margin-top:16px;padding:12px 14px;border-radius:6px;font:15px system-ui,sans-serif;display:none}
+.msg.err{display:block;background:#fbeceb;color:var(--err);border:1px solid #e6b6b2}
+.msg.ok{display:block;background:#e6f3ec;color:var(--brand);border:1px solid #a9d3bd}
+h2{margin-top:0}ol li{margin-bottom:10px}
+.hint{font:13px system-ui,sans-serif;color:var(--muted);margin-top:4px}
