@@ -3,7 +3,7 @@
  * Frontend lives on GitHub Pages and sends a Google ID token with every request.
  * Sheets: Nominees, Voters, Excluded (run setup() once).
  */
-const CLIENT_ID = 'PASTE_GOOGLE_OAUTH_CLIENT_ID_HERE';
+const CLIENT_ID = '792318753787-qi4rftddirussu4qmiji66dua66fmk5v.apps.googleusercontent.com';
 const DOMAIN = 'rentokil-initial.com';
 
 function doGet() { return json_({ ok: true, message: 'Trip nomination API is running.' }); }
